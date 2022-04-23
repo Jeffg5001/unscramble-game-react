@@ -1,0 +1,15 @@
+.headsUpDisplay {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-content: flex-start;
+    align-items: center;
+    font-size: calc(10px + 2vmin);
+}
+
+.gameBoard {
+    background-color: #000000;
+    color: white;
+    height: 100vh;
+}
