@@ -108,6 +108,7 @@ let GameBoard = (props) => {
 
     }
     const [state, dispatch] = useReducer(reducer, initializer)
+    let guessVal = state.guess + Array(state.level - state.guess.length).fill("_").join("");
     return (
         <div className="gameBoard">
         <div className="headsUpDisplay">
@@ -137,7 +138,7 @@ let GameBoard = (props) => {
             }
         }}>
         <Word id="nextWord" value={state.nextWord}  />
-        <Word id="guess" value={state.guess} onChange={()=>{
+        <Word id="guess" value={guessVal} type="guess" onChange={()=>{
             if(state.guess.length === state.level){
                 let hasValidGuess = validateGuess(state.guess, state.level);
                 if(hasValidGuess){
