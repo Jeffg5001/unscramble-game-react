@@ -3,11 +3,11 @@ import Letter from "./Letter";
 import "./Word.css";
 
 
-let Word = props => {
-    useEffect(()=>{if(props.onChange) props.onChange()})
+let Word = ({onChange, value, onClick, id}) => {
+    useEffect(()=>{if(onChange) onChange()}, [value, onChange])
     return (
-    <div className="word" id={props.id}>
-        {props.value.split("").map((letter, index) =>(<Letter value={letter} onClick={props.onClick} key={index}/>))}
+    <div className="word" id={id}>
+        {value.split("").map((letter, index) =>(<Letter value={letter} onClick={onClick} key={index}/>))}
     </div>
     )
 }

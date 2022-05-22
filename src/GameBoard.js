@@ -50,7 +50,7 @@ let convertToClickableWord = (word) =>[...word].map((letter,idx) =>({
 
 let getRandomShuffledWordFromList = list => shuffleString(chooseRandomElementFromArray(list))
 
-let validateGuess = (guess,level) =>{
+let validateGuess = (guess,level) =>{ // assumes sorted wordsList
     let validWords = wordsList[level];
     let start = 0;
     let end = validWords.length;
@@ -112,9 +112,13 @@ let GameBoard = (props) => {
         <div className="gameBoard">
         <div className="headsUpDisplay">
         <div className="timer"> Time: </div>
-        <div className="level"> Level: </div> <select defaultValue={state.level - 2} onChange={(e)=>{
-            dispatch(setLevel(parseInt(e.target.value)));
-        }}>{[1,2,3,4,5,6,7,8,9,10,11,12].map( level=>(<option key={level} value={level + 2} >{level}</option>))}</select>
+        <div className="level"> 
+            <label htmlFor="levels"> Level: </label>
+            <select id="levels" defaultValue={state.level - 2} onChange={(e)=>{
+                dispatch(setLevel(parseInt(e.target.value)));
+            }}>{[1,2,3,4,5,6,7,8,9,10,11,12].map( level=>(<option key={level} value={level + 2} >{level}</option>))}
+            </select>
+        </div> 
         <div className="score"> Score: </div>
         </div>
         <div className="wordArea" tabIndex="0" onKeyDown={(e) =>{
