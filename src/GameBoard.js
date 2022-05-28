@@ -1,126 +1,66 @@
-import { useReducer } from "react";
-import { chooseRandomElementFromArray, shuffleArray, shuffleString,  } from "./utility";
+import { useEffect, useReducer } from "react";
+import { validateGuess, getRandomShuffledWordFromList, convertToClickableWord} from "./utility";
 import './GameBoard.css';
 import Word from "./Word";
 import wordsList from "./wordsList";
 import ClickableWord from "./ClickableWord";
+import {default as reducer, getNewWord, removeLetterFromGuess, setLevel, shuffleWord, toggleLetterUsed, addLetterToGuess, removeInvalidGuess, incremetScore, decrementTimer, setIsActive, } from "./store/gameBoard";
 
-const clickableIdPrefix = "clickable";
-//action types
-const GET_NEW_WORD = "GET_NEW_WORD";
-const ADD_LETTER_TO_GUESS = "ADD_LETTER_TO_GUESS";
-const REMOVE_LETTER_FROM_GUESS = "REMOVE_LETTER_FROM_GUESS";
-const SHUFFLE_WORD = "SHUFFLE_WORD";
-const TOGGLE_LETTER_USED = "TOGGLE_LETTER_USED";
-const SET_LEVEL = "SET_LEVEL";
-//action creators
-let getNewWord = word =>({
-    type:GET_NEW_WORD,
-    word
-});
-let addLetterToGuess = letter =>({
-    type:ADD_LETTER_TO_GUESS,
-    letter
-});
-let removeLetterFromGuess = letter =>({
-    type:REMOVE_LETTER_FROM_GUESS,
-    letter
-});
-let toggleLetterUsed = id =>({
-    type:TOGGLE_LETTER_USED,
-    id
-});
-let setLevel = level =>({
-    type:SET_LEVEL,
-    level,
-    currentWord:convertToClickableWord(getRandomShuffledWordFromList(wordsList[level])),
-    nextWord:getRandomShuffledWordFromList(wordsList[level]),
-})
-let shuffleWord = word =>({
-    type:SHUFFLE_WORD,
-    word:shuffleArray(word).map((obj,idx)=>({...obj, id:clickableIdPrefix+idx})),
-})
-
-// helper functions
-let convertToClickableWord = (word) =>[...word].map((letter,idx) =>({
-    used:false,
-    letter,
-    id:clickableIdPrefix+idx,
-}));
-
-let getRandomShuffledWordFromList = list => shuffleString(chooseRandomElementFromArray(list))
-
-let validateGuess = (guess,level) =>{ // assumes sorted wordsList
-    let validWords = wordsList[level];
-    let start = 0;
-    let end = validWords.length;
-    let mid = Math.floor((start + end)/2);
-    while(start <= end){
-        if(guess < validWords[mid]){
-            end = mid - 1;
-        }else if(guess > validWords[mid]){
-            start = mid + 1;
-        }else{
-            return true;
-        }
-        mid = Math.floor((start + end)/2);
-    }
-    return false;
-}
-
-let reducer = (state, action) => {
-    switch(action.type){
-        case SET_LEVEL:
-            return {...state, currentWord:action.currentWord, nextWord:action.nextWord, level: action.level}
-        case GET_NEW_WORD:
-            return {...state, currentWord: convertToClickableWord(state.nextWord), nextWord:action.word, guess:""}
-        case ADD_LETTER_TO_GUESS:
-            return {...state, guess: state.guess + action.letter} 
-        case REMOVE_LETTER_FROM_GUESS:
-            let lastIndexOfLetter = state.guess.lastIndexOf(action.letter);
-            let newGuess = [...state.guess];
-            newGuess.splice(lastIndexOfLetter,1);
-            newGuess = newGuess.join("");
-            return {...state, guess: newGuess}  
-        case TOGGLE_LETTER_USED:
-            let letterToChange = state.currentWord.find(({id})=>id===action.id);
-            letterToChange = {...letterToChange, used:!letterToChange.used}
-            let idx = parseInt(action.id.substring(clickableIdPrefix.length));
-            let newCurrentWord = [...state.currentWord];
-            newCurrentWord[idx] = letterToChange;
-            return {...state, currentWord:newCurrentWord};
-        case SHUFFLE_WORD:
-            return{...state, currentWord:action.word}
-        default:
-            return state
-    }
-}
+const initialLevel = 3;
 
 let GameBoard = (props) => {
-    let nextWord = getRandomShuffledWordFromList(wordsList[3]);
-    let currentWord = convertToClickableWord(getRandomShuffledWordFromList(wordsList[3]));
+    let nextWord = getRandomShuffledWordFromList(wordsList[initialLevel]);
+    let currentWord = convertToClickableWord(getRandomShuffledWordFromList(wordsList[initialLevel]));
 
     let initializer ={
         nextWord,
         currentWord,
-        level: 3,
+        level: initialLevel,
         guess: "",
-
+        score:0,
+        invalidGuess:{show:false, value:""},
+        time:30,
+        isActive:false,
     }
     const [state, dispatch] = useReducer(reducer, initializer)
-    let guessVal = state.guess + Array(state.level - state.guess.length).fill("_").join("");
+    let guessVal = state.guess.padEnd(state.level,"_");
+
+    useEffect(()=>{
+        let interval = null;
+        if(state.isActive && state.time){
+            interval = setInterval(()=>{
+                dispatch(decrementTimer());// decrement timer
+            }, 1000);
+            if(state.time){
+            }
+        }else if(!state.isActive || !state.time){
+            clearInterval(interval);
+            if(state.isActive){// state.time is 0 set to false
+                dispatch(setIsActive(false));// SET_IS_ACTIVE
+                // reset time
+                // show score
+                // ask to play again
+            }
+        }
+        return () => clearInterval(interval);
+    } , [state.time, state.isActive])
+
     return (
         <div className="gameBoard">
         <div className="headsUpDisplay">
-        <div className="timer"> Time: </div>
+        <div className="timer"> Time: <span className={`time ${state.isActive? "active":"inactive"} ${state.time < 10 ? state.time < 5 ? "urgent" : "warn" : ""}`}>{state.time}</span></div>
         <div className="level"> 
             <label htmlFor="levels"> Level: </label>
             <select id="levels" defaultValue={state.level - 2} onChange={(e)=>{
-                dispatch(setLevel(parseInt(e.target.value)));
+                let level = parseInt(e.target.value);
+                dispatch(setLevel(level,wordsList[level]));
             }}>{[1,2,3,4,5,6,7,8,9,10,11,12].map( level=>(<option key={level} value={level + 2} >{level}</option>))}
             </select>
         </div> 
-        <div className="score"> Score: </div>
+        <button onClick={()=>{
+            dispatch(setIsActive(!state.isActive));
+        }}>{state.isActive?"Pause":"Start"}</button>
+        <div className="score"> Score: {state.score} </div>
         </div>
         <div className="wordArea" tabIndex="0" onKeyDown={(e) =>{
             let letter = state.currentWord.find( ({letter, used}) => (e.key === letter && !used));
@@ -137,12 +77,15 @@ let GameBoard = (props) => {
                 }
             }
         }}>
-        <Word id="nextWord" value={state.nextWord}  />
-        <Word id="guess" value={guessVal} type="guess" onChange={()=>{
+        <div id="nextLabel">Next:</div><Word id="nextWord" value={state.nextWord}  />
+        <div id="guessLabel">Guess:</div><Word id="guess" value={guessVal} type="guess" onChange={()=>{
             if(state.guess.length === state.level){
-                let hasValidGuess = validateGuess(state.guess, state.level);
+                let hasValidGuess = validateGuess(state.guess, wordsList[state.level]);
                 if(hasValidGuess){
-                    dispatch(getNewWord(getRandomShuffledWordFromList(wordsList[state.level])))
+                    dispatch(getNewWord(getRandomShuffledWordFromList(wordsList[state.level])));
+                    dispatch(incremetScore());
+                }else{
+                    dispatch(removeInvalidGuess(state.guess));
                 }
             }
         }}/>
@@ -158,6 +101,7 @@ let GameBoard = (props) => {
         <button onClick={()=>{
             dispatch(shuffleWord(state.currentWord))
         }}>Shuffle</button>
+        {state.invalidGuess.show && <div>{`${state.invalidGuess.value.toUpperCase()} is not in list of valid words`}</div>}
         </div>
         </div>
     )
