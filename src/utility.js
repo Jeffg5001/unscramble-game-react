@@ -57,3 +57,5 @@ export let validateGuess = (guess, validWords) =>{ // assumes sorted wordsList
     }
     return false;
 }
+
+export const initialTime = 30;

@@ -4,9 +4,10 @@ import './GameBoard.css';
 import Word from "./Word";
 import wordsList from "./wordsList";
 import ClickableWord from "./ClickableWord";
-import {default as reducer, getNewWord, removeLetterFromGuess, setLevel, shuffleWord, toggleLetterUsed, addLetterToGuess, removeInvalidGuess, incremetScore, decrementTimer, setIsActive, } from "./store/gameBoard";
+import {default as reducer, getNewWord, removeLetterFromGuess, setLevel, shuffleWord, toggleLetterUsed, addLetterToGuess, removeInvalidGuess, incremetScore, decrementTimer, setIsActive, startNewGame, } from "./store/gameBoard";
 
 const initialLevel = 3;
+
 
 let GameBoard = (props) => {
     let nextWord = getRandomShuffledWordFromList(wordsList[initialLevel]);
@@ -19,12 +20,12 @@ let GameBoard = (props) => {
         guess: "",
         score:0,
         invalidGuess:{show:false, value:""},
-        time:30,
+        time: 0,
         isActive:false,
     }
     const [state, dispatch] = useReducer(reducer, initializer)
     let guessVal = state.guess.padEnd(state.level,"_");
-
+    // let levelToShow = state.level - 2;
     useEffect(()=>{
         let interval = null;
         if(state.isActive && state.time){
@@ -37,9 +38,6 @@ let GameBoard = (props) => {
             clearInterval(interval);
             if(state.isActive){// state.time is 0 set to false
                 dispatch(setIsActive(false));// SET_IS_ACTIVE
-                // reset time
-                // show score
-                // ask to play again
             }
         }
         return () => clearInterval(interval);
@@ -50,20 +48,28 @@ let GameBoard = (props) => {
         <div className="headsUpDisplay">
         <div className="timer"> Time: <span className={`time ${state.isActive? "active":"inactive"} ${state.time < 10 ? state.time < 5 ? "urgent" : "warn" : ""}`}>{state.time}</span></div>
         <div className="level"> 
-            <label htmlFor="levels"> Level: </label>
-            <select id="levels" defaultValue={state.level - 2} onChange={(e)=>{
+            <label htmlFor="levels"> Level: 
+                <span className={"levelText " + (state.isActive? "" : "hidden")}> {state.level - 2}</span>
+            </label>
+            <select className={"levelSelect " + (!state.isActive ? "" : "hidden")} id="levels" defaultValue={state.level - 2} onChange={(e)=>{
                 let level = parseInt(e.target.value);
                 dispatch(setLevel(level,wordsList[level]));
+                dispatch(startNewGame());
             }}>{[1,2,3,4,5,6,7,8,9,10,11,12].map( level=>(<option key={level} value={level + 2} >{level}</option>))}
             </select>
         </div> 
         <button onClick={()=>{
+            if(!state.time && !state.isActive){
+                dispatch(setLevel(state.level, wordsList[state.level]));
+                dispatch(startNewGame());
+            }
             dispatch(setIsActive(!state.isActive));
-        }}>{state.isActive?"Pause":"Start"}</button>
+        }}>{state.isActive?"Pause": state.time ? "Resume" : "Start New Game"}</button>
         <div className="score"> Score: {state.score} </div>
         </div>
-        <div className="wordArea" tabIndex="0" onKeyDown={(e) =>{
+        <div className={`wordArea ${!state.isActive?"hidden":""}`} tabIndex="0" onKeyDown={(e) =>{
             let letter = state.currentWord.find( ({letter, used}) => (e.key === letter && !used));
+            if(!state.isActive) return;
             if(letter){
                 dispatch(toggleLetterUsed(letter.id))
                 if(!letter.used){ 

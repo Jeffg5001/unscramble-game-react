@@ -2,6 +2,7 @@ import {
   clickableIdPrefix,
   convertToClickableWord,
   getRandomShuffledWordFromList,
+  initialTime,
   resetClickableWord,
   shuffleArray,
 } from "../utility";
@@ -17,6 +18,7 @@ const REMOVE_INVALID_GUESS = "REMOVE_INVALID_GUESS";
 const INCREMENT_SCORE = "INCREMENT_SCORE";
 const DECREMENT_TIMER = "DECREMENT_TIMER";
 const SET_IS_ACTIVE = "SET_IS_ACTIVE";
+const START_NEW_GAME = "START_NEW_GAME";
 //action creators
 export let getNewWord = (word) => ({
   type: GET_NEW_WORD,
@@ -61,6 +63,9 @@ export let decrementTimer = () =>({
 export let setIsActive = newIsActive =>({
     type: SET_IS_ACTIVE,
     newIsActive,
+});
+export let startNewGame = () =>({
+    type: START_NEW_GAME
 });
 
 // helper functions
@@ -115,6 +120,8 @@ export default function reducer(state, action) {
         return {...state, time: state.time - 1};
     case SET_IS_ACTIVE:
         return{...state, isActive: action.newIsActive};
+    case START_NEW_GAME:
+        return {...state, guess:"", isActive:true, score:0, time:initialTime + (state.level - 3)*10, invalidGuess:{value:"", show:false}}
     default:
       return state;
   }
