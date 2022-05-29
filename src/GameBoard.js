@@ -25,7 +25,6 @@ let GameBoard = (props) => {
     }
     const [state, dispatch] = useReducer(reducer, initializer)
     let guessVal = state.guess.padEnd(state.level,"_");
-    // let levelToShow = state.level - 2;
     useEffect(()=>{
         let interval = null;
         if(state.isActive && state.time){
@@ -67,7 +66,7 @@ let GameBoard = (props) => {
         }}>{state.isActive?"Pause": state.time ? "Resume" : "Start New Game"}</button>
         <div className="score"> Score: {state.score} </div>
         </div>
-        <div className={`wordArea ${!state.isActive?"hidden":""}`} tabIndex="0" onKeyDown={(e) =>{
+        <div className={`wordArea`} tabIndex="0" onKeyDown={(e) =>{
             let letter = state.currentWord.find( ({letter, used}) => (e.key === letter && !used));
             if(!state.isActive) return;
             if(letter){
@@ -95,7 +94,7 @@ let GameBoard = (props) => {
                 }
             }
         }}/>
-        <ClickableWord id="currenttWord" value={state.currentWord} onClick={ (e) =>{
+        <ClickableWord className={`${!state.isActive?"hidden":""}`} id="currenttWord" value={state.currentWord} onClick={ (e) =>{
             dispatch(toggleLetterUsed(e.target.id))
             let newLetter = e.target.textContent;
             if(e.target.className === "LetterBox"){
@@ -104,6 +103,8 @@ let GameBoard = (props) => {
                 dispatch(removeLetterFromGuess(newLetter))
             }
         }}/>
+        <Word value={state.currentWord.map(elem=>elem.letter).join("")} className={`${state.isActive?"hidden":""}`} />
+
         <button onClick={()=>{
             dispatch(shuffleWord(state.currentWord))
         }}>Shuffle</button>
