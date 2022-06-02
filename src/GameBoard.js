@@ -138,7 +138,7 @@ let GameBoard = (props) => {
         }}
       >
         <div id="nextLabel">Next:</div>
-        <Word id="nextWord" value={state.nextWord} />
+        <Word id="nextWord" value={state.nextWord} className={state.isActive ? "" :"blurred"} />
         <div id="guessLabel">Guess:</div>
         <Word
           id="guess"
@@ -179,7 +179,7 @@ let GameBoard = (props) => {
         />
         <Word
           value={state.currentWord.map((elem) => elem.letter).join("")}
-          className={`${state.isActive ? "hidden" : ""}`}
+          className={`${state.isActive ? "hidden" : "blurred"}`}
         />
 
         <button
