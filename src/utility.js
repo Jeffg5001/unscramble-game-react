@@ -1,11 +1,11 @@
 
 
-export let getRandomInt = (low, high) => {
+export let getRandomInt = (low, high, randFn = Math.random) => {
     let multiplier = (high + 1) - low
-    return Math.floor((Math.random() * multiplier) + low)
+    return Math.floor((randFn() * multiplier) + low)
 }
 
-export function shuffleArray(arr){
+export function shuffleArray(arr, randFn = Math.random){
     let arrCopy = [...arr] // maybe use lodash deep copy(clone)
     if(arr.length < 2){
         return arrCopy
@@ -16,15 +16,15 @@ export function shuffleArray(arr){
         indices.push(i)
     }
     while(indices.length){
-        let indexToRemove = getRandomInt(0,indices.length - 1 )
+        let indexToRemove = getRandomInt(0,indices.length - 1, randFn)
         shuffledIndices.push(indices.splice(indexToRemove,1)[0])
     }
     return shuffledIndices.map(index => arr[index])
 }
 
-export let shuffleString = string => shuffleArray(string.split("")).join("")
+export let shuffleString = (string, randFn = Math.random) => shuffleArray(string.split(""), randFn).join("")
 
-export let chooseRandomElementFromArray = (arr) => arr.length ? arr[getRandomInt(0,arr.length - 1)]:undefined;
+export let chooseRandomElementFromArray = (arr, randFn = Math.random) => arr.length ? arr[getRandomInt(0,arr.length - 1, randFn)]:undefined;
 
 export const clickableIdPrefix = "clickable";
 
@@ -39,7 +39,7 @@ export let resetClickableWord = (arr) => arr.map(word=>({
     used:false,
 }));
 
-export let getRandomShuffledWordFromList = list => shuffleString(chooseRandomElementFromArray(list))
+export let getRandomShuffledWordFromList = (list, randFn = Math.random) => shuffleString(chooseRandomElementFromArray(list, randFn))
 
 export let validateGuess = (guess, validWords) =>{ // assumes sorted wordsList
     let start = 0;

@@ -18,7 +18,7 @@ rl.on("line", line => {
 })
 try{
     once(rl,"close").then( () =>{
-        writeFileSync("./src/wordsList.js", "export default " + JSON.stringify(wordsObj))
+        writeFileSync("./src/wordsList.js", "let wordList = " + JSON.stringify(wordsObj) + ";\nexport default wordList;\n")
     }).catch(err =>{console.error(err);})
 } catch (err){
     console.error(err);
