@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/unscramble-game-react/static/css/main.9e5cb847.css",
-    "main.js": "/unscramble-game-react/static/js/main.44087ac8.js",
+    "main.css": "/unscramble-game-react/static/css/main.8f8017b0.css",
+    "main.js": "/unscramble-game-react/static/js/main.ef19b9a4.js",
     "static/js/787.93946c6c.chunk.js": "/unscramble-game-react/static/js/787.93946c6c.chunk.js",
     "index.html": "/unscramble-game-react/index.html",
-    "main.9e5cb847.css.map": "/unscramble-game-react/static/css/main.9e5cb847.css.map",
-    "main.44087ac8.js.map": "/unscramble-game-react/static/js/main.44087ac8.js.map",
+    "main.8f8017b0.css.map": "/unscramble-game-react/static/css/main.8f8017b0.css.map",
+    "main.ef19b9a4.js.map": "/unscramble-game-react/static/js/main.ef19b9a4.js.map",
     "787.93946c6c.chunk.js.map": "/unscramble-game-react/static/js/787.93946c6c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.9e5cb847.css",
-    "static/js/main.44087ac8.js"
+    "static/css/main.8f8017b0.css",
+    "static/js/main.ef19b9a4.js"
   ]
 }
