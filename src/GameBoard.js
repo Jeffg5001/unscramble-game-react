@@ -170,7 +170,7 @@ let GameBoard = (props) => {
           onClick={(e) => {
             dispatch(toggleLetterUsed(e.target.id));
             let newLetter = e.target.textContent;
-            if (e.target.className === "LetterBox") {
+            if (e.target.className === "LetterBox ") {
               dispatch(addLetterToGuess(newLetter));
             } else {
               dispatch(removeLetterFromGuess(newLetter));

@@ -1,5 +1,6 @@
 .word {
     display: flex;
+    gap: 2em;
 }
 
 .wordArea {
@@ -16,5 +17,5 @@
 
 .blurred {
     color: transparent;
-    text-shadow: 0 0 9px rgba(255,255,255,0.5);
+    text-shadow: 0 0 1em rgba(255,255,255,0.5);
 }

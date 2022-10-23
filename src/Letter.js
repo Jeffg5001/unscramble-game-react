@@ -1,6 +1,6 @@
 function Letter(props){
     return (
-        <div className={"LetterBox" + (props.type ? "-" + props.type : "")}>
+        <div className={"LetterBox " + (props.type ? props.type : "")}>
             {props.value}
         </div>
     )
